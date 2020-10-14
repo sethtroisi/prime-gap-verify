@@ -1,4 +1,6 @@
-
 large_sieve
 a.out
 *.o
+
+tests.txt
+pfgw.*
