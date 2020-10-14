@@ -16,9 +16,15 @@
 
 #include<memory>
 
+#ifndef HANDROLLED
+#include <primesieve.hpp>
+#endif  // HANDROLLED
+
+
 namespace primes {
     class PrimeIterator;
 
+#ifdef HANDROLLED
     class iterator {
         public:
             // [De]Constructor must be defined after PrimeItator is complete
@@ -28,7 +34,20 @@ namespace primes {
             uint64_t next();
 
         private:
-
             std::unique_ptr<PrimeIterator> prime_iter;
     };
+#else
+    // See README
+    #include <primesieve.hpp>
+
+    class iterator {
+        public:
+            iterator() = default;
+            ~iterator() = default;
+
+            uint64_t next() { return prime_iter.next_prime(); }
+        private:
+            primesieve::iterator prime_iter;
+    };
+#endif  // HANDROLLED
 }

@@ -8,6 +8,12 @@ Either [kimwalisch's](https://github.com/kimwalisch/)
 excellent [primesieve](https://github.com/kimwalisch/primesieve)
 or a hand rolled version based on a Sieve of Eratosthenes.
 
+to use handrolled prime iterator make with `make DEFINES=-DHANDROLLED`
+
+```bash
+sudo apt install libprimesieve-dev
+```
+
 ## Prime Test
 
 [GMPlib's](https://gmplib.org/)

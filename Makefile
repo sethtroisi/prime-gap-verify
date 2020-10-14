@@ -16,14 +16,14 @@
 OBJS	= primes.o
 OUT	= large_sieve
 CC	= g++
-CFLAGS	= -Wall -Werror -O3 -lgmp
+CFLAGS	= -Wall -Werror -O3
 # Need for local gmp / primesieve
-LDFLAGS	= -L /usr/local/lib
-#LDFLAGS	=
+LDFLAGS	= -L /usr/local/lib -lgmp -lprimesieve
+#LDFLAGS	= -lgmp -lprimesieve
 DEFINES =
 
 %.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(DEFINES)
 
 all: $(OUT)
 

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "primes.hpp"
+
 #include <cassert>
 #include <cstdint>
 #include <vector>
 
-#include "primes.hpp"
-
-
+#ifdef HANDROLLED
 namespace primes {
     /**
      * Cleanup version of
@@ -132,3 +132,4 @@ namespace primes {
     }
     iterator::~iterator() = default;
 }  // namespace
+#endif  // HANDROLLED
