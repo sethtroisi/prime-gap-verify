@@ -15,6 +15,8 @@
  * [1] See math in next_prime.c in gmp-lib (by Seth)
  */
 
+#include "primes.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -37,6 +39,15 @@ void print_usage(char *name) {
 
 void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap);
 
+static bool isprime_brute(uint32_t n) {
+    if ((n & 1) == 0)
+        return false;
+    for (uint32_t p = 3; p * p <= n; p += 2)
+        if (n % p == 0)
+            return false;
+    return true;
+}
+
 int main(int argc, char ** argv) {
     if (argc != 6) {
         print_usage(argv[0]);
@@ -57,6 +68,10 @@ int main(int argc, char ** argv) {
 
     if (p <= 50 || p > 40000) {
         printf("Invalid p=%lld\n", p);
+        exit(1);
+    }
+    if (!isprime_brute(p)) {
+        printf("P(%lld) not prime!", p);
         exit(1);
     }
 
@@ -95,70 +110,6 @@ calculate_sievelimit(double n_bits, double gap) {
   	return limit;
 }
 
-static bool isprime_brute(uint32_t n) {
-    if ((n & 1) == 0)
-        return false;
-    for (uint32_t p = 3; p * p <= n; p += 2)
-        if (n % p == 0)
-            return false;
-    return true;
-}
-
-void get_sieve_primes_segmented_lambda(uint64_t n, std::function<void(uint64_t)> lambda) {
-    // Large enough to be fast and still fit in L1/L2 cache.
-    uint32_t BLOCKSIZE = 1 << 16;
-    uint32_t ODD_BLOCKSIZE = BLOCKSIZE >> 1;
-    std::vector<char> is_prime(ODD_BLOCKSIZE, true);
-
-    lambda(2L);
-
-    std::vector<int32_t> primes = {3};
-    // First number in next block that primes[pi] divides.
-    std::vector<int32_t> next_mod = {9 >> 1};
-
-    uint32_t p_lim = 5;
-    uint64_t p2_lim = p_lim * p_lim;
-
-    for (uint64_t B = 0; B < n; B += BLOCKSIZE) {
-        uint64_t B_END = B + BLOCKSIZE - 1;
-        if (B_END > n) {
-            BLOCKSIZE = (n - B);
-            ODD_BLOCKSIZE = (n - B + 1) >> 1;
-            B_END = n;
-        }
-
-        while (p2_lim <= B_END) {
-            if (isprime_brute(p_lim)) {
-                primes.push_back(p_lim);
-                assert( p2_lim >= B );
-                next_mod.push_back((p2_lim - B) >> 1);
-            }
-            p2_lim += 4 * p_lim + 4;
-            p_lim += 2;
-            //assert( p_lim * p_lim == p2_lim );
-        }
-
-        // reset is_prime
-        std::fill(is_prime.begin(), is_prime.end(), true);
-        if (B == 0) is_prime[0] = 0; // Skip 1
-
-        // Can skip some large pi up to certain B (would have to set next_mod correctly)
-        for (uint32_t pi = 0; pi < primes.size(); pi++) {
-            const uint32_t prime = primes[pi];
-            uint32_t first = next_mod[pi];
-            for (; first < ODD_BLOCKSIZE; first += prime) {
-                is_prime[first] = false;
-            }
-            next_mod[pi] = first - ODD_BLOCKSIZE;
-        }
-        for (uint32_t prime = 0; prime < ODD_BLOCKSIZE; prime++) {
-            if (is_prime[prime]) {
-                lambda(B + 2 * prime + 1);
-            }
-        }
-    }
-}
-
 
 void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap) {
     mpz_t N;
@@ -185,10 +136,14 @@ void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap) {
     size_t odds = gap / 2 + 1;
     std::vector<bool> composite(odds, 0);
 
-	// see prime-gap project
+    size_t prime_count = 1;
+    primes::iterator iter;
+    uint64_t prime = iter.next();
+    assert(prime == 2);  // Skip  2
 
     // small primes can divide multiple numbers
-    for (uint64_t prime = 3; prime <= gap; prime += 2) {
+    for (; prime <= gap; prime = iter.next()) {
+        prime_count++;
         uint64_t mod = mpz_fdiv_ui(N, prime);
         uint64_t first = prime - mod;
         if (first % 2 == 1) {
@@ -202,15 +157,16 @@ void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap) {
 
     size_t unknowns = std::count(composite.begin(), composite.end(), false);
     size_t count_c = gap - unknowns;
-    fprintf(stderr, "%ld / %ld = %.2f composite, %ld remaining\n",
-            gap - unknowns, gap, 100.0 * count_c / gap, unknowns);
+    fprintf(stderr, "%ld / %ld = %.2f composite, %ld remaining (primes %ld)\n",
+            gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
 
-    get_sieve_primes_segmented_lambda(limit, [&](const uint64_t prime) {
+    for (; prime < limit; prime = iter.next()) {
+        prime_count++;
         uint64_t first = prime - mpz_fdiv_ui(N, prime);
         if ((first < gap) && ((first & 1) == 0)) {
             composite[first / 2] = true;
         }
-    });
+    }
 
     assert(composite[0] == false);
     assert(composite[odds-1] == false);
@@ -218,8 +174,8 @@ void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap) {
     // Write out some status
     unknowns = std::count(composite.begin(), composite.end(), false);
     count_c = gap - unknowns;
-    fprintf(stderr, "%ld / %ld = %.2f composite, %ld remaining\n",
-            gap - unknowns, gap, 100.0 * count_c / gap, unknowns);
+    fprintf(stderr, "%ld / %ld = %.2f composite, %ld remaining (primes %ld)\n",
+            gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
 
     for(size_t i = 0; i < odds; i++) {
         if (!composite[i]) {

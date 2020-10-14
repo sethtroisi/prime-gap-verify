@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-OBJS	= #primes.o
+OBJS	= primes.o
 OUT	= large_sieve
 CC	= g++
 CFLAGS	= -Wall -Werror -O3 -lgmp
@@ -22,8 +22,8 @@ LDFLAGS	= -L /usr/local/lib
 #LDFLAGS	=
 DEFINES =
 
-#%.o: %.cpp
-#	$(CC) -c -o $@ $< $(CFLAGS)
+%.o: %.cpp
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 all: $(OUT)
 
