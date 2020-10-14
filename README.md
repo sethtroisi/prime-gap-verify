@@ -1,6 +1,6 @@
 # Prime Gap Verify
 
-Code to verify prime gaps for prime-gap-project.
+Code to verify prime gaps for [prime-gap-project](https://github.com/primegap-list-project/prime-gap-list/)
 
 ## Primes
 
