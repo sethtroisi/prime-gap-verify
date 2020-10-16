@@ -18,7 +18,6 @@
 #include <cstdint>
 #include <vector>
 
-#ifdef HANDROLLED
 namespace primes {
     /**
      * Cleanup version of
@@ -26,6 +25,16 @@ namespace primes {
      * Inspiration from Bruce @ randomascii.wordpress.com about optimized code.
      */
 
+    bool isprime_brute(uint32_t n) {
+        if ((n & 1) == 0)
+            return false;
+        for (uint32_t p = 3; p * p <= n; p += 2)
+            if (n % p == 0)
+                return false;
+        return true;
+    }
+
+#ifdef HANDROLLED
     class PrimeIterator {
         public:
             PrimeIterator() = default;
@@ -131,5 +140,6 @@ namespace primes {
         prime_iter.reset(new PrimeIterator());
     }
     iterator::~iterator() = default;
-}  // namespace
 #endif  // HANDROLLED
+
+}  // namespace primes

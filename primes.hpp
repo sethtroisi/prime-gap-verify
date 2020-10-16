@@ -24,6 +24,8 @@
 namespace primes {
     class PrimeIterator;
 
+    bool isprime_brute(uint32_t n);
+
 #ifdef HANDROLLED
     class iterator {
         public:

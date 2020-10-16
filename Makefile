@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-OBJS	= primes.o
+OBJS	= primes.o sieve_util.o
 OUT	= large_sieve
 CC	= g++
 CFLAGS	= -Wall -Werror -O3
