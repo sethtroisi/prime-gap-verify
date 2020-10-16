@@ -36,4 +36,4 @@ large_sieve : %: %.cpp $(OBJS)
 .PHONY: clean
 
 clean:
-	rm -rf $(OBJS) $(OUT) *.so __pycache__/ verify/*.so verify/__pycache__/ verify/build/
+	rm -rf $(OBJS) $(OUT) *.so __pycache__/ build/
