@@ -12,9 +12,12 @@ ext = Extension(
     ],
 )
 
+# Load version without trying to load module
+exec(open("primegapverify/_version.py").read())
+
 setup(
     name="primegapverify",
-    version="0.3a",
+    version=__version__,
     author="Seth Troisi",
     author_email="sethtroisi@google.com",
     license="Apache License 2.0",
