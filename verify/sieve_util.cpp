@@ -48,32 +48,12 @@ namespace sieve_util {
     }
 
 
-    void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap) {
-        mpz_t N;
-        mpz_init(N);
-
-        // Verify P is prime
-        assert(primes::isprime_brute(p));
-
-        // Verify d divides P#
-        mpz_primorial_ui(N, p);
-        assert(0 == mpz_tdiv_q_ui(N, N, d));
-
-        mpz_mul_ui(N, N, m);
-
-        assert(-a > 0);
-        mpz_sub_ui(N, N, -a);
-
-        int bits = mpz_sizeinbase(N, 2);
-        uint64_t limit = calculate_sievelimit(bits, gap);
-        fprintf(stderr, "bits: %5d  gap: %6ld  limit: %'ld\n", bits, gap, limit);
-        fprintf(stderr, "expect ~~%.0f remaining\n", 1.0 * gap / (log(limit) * 1.7811));
-
+    std::vector<bool> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count) {
         // Sieve
         size_t odds = gap / 2 + 1;
         std::vector<bool> composite(odds, 0);
 
-        size_t prime_count = 1;
+        prime_count = 1;
         primes::iterator iter;
         uint64_t prime = iter.next();
         assert(prime == 2);  // Skip  2
@@ -92,10 +72,12 @@ namespace sieve_util {
             }
         }
 
+        /* Think about returning this for debug or something
         size_t unknowns = std::count(composite.begin(), composite.end(), false);
         size_t count_c = gap - unknowns;
         fprintf(stderr, "%ld / %ld = %.2f composite, %ld remaining (primes %ld)\n",
                 gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
+        */
 
         for (; prime < limit; prime = iter.next()) {
             prime_count++;
@@ -108,16 +90,7 @@ namespace sieve_util {
         assert(composite[0] == false);
         assert(composite[odds-1] == false);
 
-        // Write out some status
-        unknowns = std::count(composite.begin(), composite.end(), false);
-        count_c = gap - unknowns;
-        fprintf(stderr, "%ld / %ld = %.2f composite, %ld remaining (primes %ld)\n",
-                gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
-
-        for(size_t i = 0; i < odds; i++) {
-            if (!composite[i]) {
-                printf("%ld * %ld# / %ld + %ld\n", m, p, d, a+2*i);
-            }
-        }
+        // Possible a vector copy, but fast in the overall scheme of things.
+        return composite;
     }
 }  // namespace sieve_util

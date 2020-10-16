@@ -14,11 +14,14 @@
 
 #pragma once
 
-#include "primes.hpp"
+#include <vector>
+#include <cstdint>
+
+#include <gmp.h>
 
 namespace sieve_util {
     const uint64_t MAX_LIMIT = 10'000'000'000;
 
     uint64_t calculate_sievelimit(double n_bits, double gap);
-    void sieve(uint64_t m, uint64_t p, uint64_t d, uint64_t a, uint64_t gap);
+    std::vector<bool> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count);
 }

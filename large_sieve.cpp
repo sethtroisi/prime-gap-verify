@@ -32,14 +32,28 @@
 #include "verify/primes.hpp"
 #include "verify/sieve_util.hpp"
 
+#include <cassert>
 #include <cstdint>
 #include <cstdio>
+
+#include <gmp.h>
 
 typedef long long ll;
 
 void print_usage(char *name) {
     printf("Usage %s  m P d a gapsize\n\n", name);
     printf("Sieve and ouput numbers to check (including endpoints)\n\n");
+}
+
+void calc_N(mpz_t &N, ll m, ll p, ll d, ll a) {
+    mpz_primorial_ui(N, p);
+    mpz_mul_ui(N, N, m);
+
+    // Verify d divides P#
+    assert(0 == mpz_tdiv_q_ui(N, N, d));
+
+    assert(-a > 0);
+    mpz_sub_ui(N, N, -a);
 }
 
 int main(int argc, char ** argv) {
@@ -79,11 +93,39 @@ int main(int argc, char ** argv) {
         exit(1);
     }
 
-    if (gap <= a || gap > 7000000) {
+    if (gap <= a || gap > 7000000 || gap % 2 == 1) {
         printf("Invalid gap=%lld\n", gap);
         exit(1);
     }
 
 	fprintf(stderr, "sieving %lld * %lld# / %lld + [%lld, %lld]\n", m, p, d, a, a+gap);
-    sieve_util::sieve(m, p, d, a, gap);
+
+    /* N = m * P# / d - a */
+    mpz_t N;
+    mpz_init(N);
+    calc_N(N, m, p, d, a);
+
+    /* Input stats */
+    int bits = mpz_sizeinbase(N, 2);
+    uint64_t limit = sieve_util::calculate_sievelimit(bits, gap);
+    fprintf(stderr, "bits: %5d  gap: %6lld  limit: %'ld\n", bits, gap, limit);
+    fprintf(stderr, "expect ~~%.0f remaining\n", 1.0 * gap / (log(limit) * 1.7811));
+
+    size_t prime_count = 0;
+    auto composite = sieve_util::sieve(N, gap, limit, prime_count);
+    size_t odds = gap / 2 + 1;
+    assert(composite.size() == odds);
+
+    /* Final stats */
+    size_t unknowns = std::count(composite.begin(), composite.end(), false);
+    size_t count_c = gap - unknowns;
+    fprintf(stderr, "%lld / %lld = %.2f composite, %ld remaining (primes %ld)\n",
+            gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
+
+    /* Output */
+    for(size_t i = 0; i < composite.size(); i++) {
+        if (!composite[i]) {
+            printf("%lld * %lld# / %lld + %lld\n", m, p, d, a+2*i);
+        }
+    }
 }
