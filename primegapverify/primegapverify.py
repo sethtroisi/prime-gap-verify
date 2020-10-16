@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import math
-
 import verify as _verify
 
+import gmpy2
 
 def parse_primorial(number):
     pass
@@ -28,5 +28,17 @@ def sieve(start, gap, max_prime=None):
     return _verify.sieve_interval(start, gap, max_prime)
 
 
-def test(start, gap, max_prime=None):
-    pass
+def validate(start, gap, max_prime=None):
+    """Validate start, start+gap are prime and the interior is composite"""
+
+    # TODO: Verbose printing or return
+
+    composites = sieve(start, gap, max_prime)
+    for i, composite in enumerate(composites):
+        if not composite:
+            if gmpy2.is_prime(start + 2 * i):
+                if i not in (0, gap / 2 + 1):
+                    print ("Interior point is prime: start +", 2 * i)
+                    return False
+
+    return True
