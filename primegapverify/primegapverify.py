@@ -14,7 +14,7 @@
 
 import math
 
-import verify
+import verify as _verify
 
 
 def parse_primorial(number):
@@ -23,9 +23,9 @@ def parse_primorial(number):
 
 def sieve(start, gap, max_prime=None):
     if max_prime is None or max_prime == 0:
-        max_prime = verify.sieve_limit(math.log2(start), gap)
+        max_prime = _verify.sieve_limit(math.log2(start), gap)
 
-    return verify.sieve_interval(start, gap, max_prime)
+    return _verify.sieve_interval(start, gap, max_prime)
 
 
 def test(start, gap, max_prime=None):

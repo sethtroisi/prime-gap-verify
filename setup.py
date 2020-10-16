@@ -5,10 +5,10 @@ ext = Extension(
     libraries=["gmp", "primesieve"],
     library_dirs=["/usr/local/lib"],
     sources=[
-        "verify/verifymodule.cpp",
-        "verify/verify.cpp",
-        "verify/primes.cpp",
-        "verify/sieve_util.cpp",
+        "primegapverify/verify/verifymodule.cpp",
+        "primegapverify/verify/verify.cpp",
+        "primegapverify/verify/primes.cpp",
+        "primegapverify/verify/sieve_util.cpp",
     ],
 )
 

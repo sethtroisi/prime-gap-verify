@@ -13,27 +13,16 @@
 # limitations under the License.
 
 
-OBJS	= verify/primes.o verify/sieve_util.o
-OUT	= large_sieve
-CC	= g++
-CFLAGS	= -Wall -Werror -O3
-# Need for local gmp / primesieve
-LDFLAGS	= -L /usr/local/lib -lgmp -lprimesieve
-#LDFLAGS	= -lgmp -lprimesieve
-DEFINES =
+all: large_sieve primegapverify
 
-%.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS) $(DEFINES)
-
-all: $(OUT) primegapverify
-
-primegapverify: $(OBJS)
+primegapverify:
 	python setup.py build_ext --inplace
 
-large_sieve : %: %.cpp $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(DEFINES)
+large_sieve:
+	 $(MAKE) -C primegapverify
 
-.PHONY: clean
+.PHONY: clean primegapverify
 
 clean:
-	rm -rf $(OBJS) $(OUT) *.so __pycache__/ build/ dist/ wheelhouse/ primegapverify.egg-info/
+	$(MAKE) -C primegapverify clean
+	rm -rf *.so __pycache__/ build/ dist/ wheelhouse/ primegapverify.egg-info/
