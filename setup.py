@@ -23,7 +23,7 @@ setup(
     packages=find_packages(),
     ext_modules=[ext],
     install_requires=[
-        "gmpy2 >= 2.1.0b5"
+#        "gmpy2 >= 2.1.0b5"
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",

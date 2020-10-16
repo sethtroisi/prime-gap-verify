@@ -28,6 +28,10 @@ to use handrolled prime iterator make with `make DEFINES=-DHANDROLLED`
 
 ```bash
 sudo apt install libprimesieve-dev
+
+# for gmpy2
+sudo apt install libgmp-dev libmpc-dev libmpfr-dev
+sudo pip install gmpy2==2.1.0b5
 ```
 
 ## Prime Test
