@@ -14,7 +14,7 @@
 
 
 OBJS	= primes.o sieve_util.o
-OUT	= large_sieve
+OUT	= large_sieve primegapverify
 CC	= g++
 CFLAGS	= -Wall -Werror -O3
 # Need for local gmp / primesieve
@@ -27,10 +27,13 @@ DEFINES =
 
 all: $(OUT)
 
-$(OUT) : %: %.cpp $(OBJS)
+primegapverify: $(OBJS)
+	python setup.py build_ext --inplace
+
+large_sieve : %: %.cpp $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(DEFINES)
 
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS) $(OUT)
+	rm -rf $(OBJS) $(OUT) *.so build/

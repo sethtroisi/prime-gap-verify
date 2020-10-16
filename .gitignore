@@ -1,6 +1,7 @@
 large_sieve
 a.out
 *.o
+*.so
 
 tests.txt
 pfgw.*
