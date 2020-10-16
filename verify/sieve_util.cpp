@@ -57,12 +57,13 @@ namespace sieve_util {
         primes::iterator iter;
         uint64_t prime = iter.next();
         assert(prime == 2);  // Skip  2
+        prime = iter.next();
+        assert(prime == 3);
 
         // small primes can divide multiple numbers
-        for (; prime <= gap; prime = iter.next()) {
+        for (; prime <= gap && prime <= limit; prime = iter.next()) {
             prime_count++;
-            uint64_t mod = mpz_fdiv_ui(N, prime);
-            uint64_t first = prime - mod;
+            uint64_t first = mpz_cdiv_ui(N, prime);
             if (first % 2 == 1) {
                 first += prime;
             }
@@ -72,6 +73,8 @@ namespace sieve_util {
             }
         }
 
+        // TODO make sure limit * limit < N
+
         /* Think about returning this for debug or something
         size_t unknowns = std::count(composite.begin(), composite.end(), false);
         size_t count_c = gap - unknowns;
@@ -79,9 +82,9 @@ namespace sieve_util {
                 gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
         */
 
-        for (; prime < limit; prime = iter.next()) {
+        for (; prime <= limit; prime = iter.next()) {
             prime_count++;
-            uint64_t first = prime - mpz_fdiv_ui(N, prime);
+            uint64_t first = mpz_cdiv_ui(N, prime);
             if ((first < gap) && ((first & 1) == 0)) {
                 composite[first / 2] = true;
             }

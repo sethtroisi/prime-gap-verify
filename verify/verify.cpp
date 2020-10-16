@@ -20,20 +20,23 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
+
 const char doc_sieve_interval[] = R"EOF(
     Sieve an interval of numbers
 
     Parameters
     ----------
-       N : start of interval
+       N : start of interval (must be odd)
        distance : size of interval
        max_prime : remove all multiples of primes less than or equal
 
     Returns
     -------
-       unknowns : array
-           Offsets of numbers not known to be composite3
+       composites : array
+           Status (composite or unknown) for each even distance number
+           from the start of the interval to the end.
 )EOF";
+
 
 const char doc_sieve_limit[] = R"EOF(
     Determine a reasonable max prime for sieve_interval
@@ -42,13 +45,20 @@ const char doc_sieve_limit[] = R"EOF(
 )EOF";
 
 
-void set_mpz_from_int_str(mpz_t *n, PyObject* n_str) {
+int set_mpz_from_int_str(mpz_t &n, PyObject* n_str) {
     // Probably works for both int & str input.
-    PyObject *s = PyObject_Str(n_str);
-    //printf("Hi '%s'\n", s);
-    //mpz_set_str(n, s, 10);
+    PyObject* s = PyObject_Str(n_str);
+    PyObject* bytes = PyUnicode_AsEncodedString(s, "utf-8", "?");
+    if (bytes == NULL) {
+        Py_XDECREF(s);
+        return -1;
+    }
+
+    mpz_set_str(n, PyBytes_AS_STRING(bytes), 10);
 
     Py_XDECREF(s);
+    Py_XDECREF(bytes);
+    return 0;
 }
 
 PyObject*
@@ -61,6 +71,8 @@ sieve_interval(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "Oii", &start, &gap, &max_prime))
         return NULL;
 
+    // TODO: validate N is odd.
+
     if (max_prime <= 10) {
         return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
     }
@@ -69,8 +81,29 @@ sieve_interval(PyObject *self, PyObject *args)
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
     }
 
+    // XXX: Silly to roundtrip this through a str, but it works.
+    mpz_t n;
+    mpz_init(n);
+    if (set_mpz_from_int_str(n, start)) {
+        PyErr_Format(PyExc_ValueError, "bad start(%S)", start);
+        return NULL;
+    }
+    if (mpz_even_p(n)) {
+        PyErr_Format(PyExc_ValueError, "even start(%S)", start);
+        return NULL;
+    }
 
-    return PyLong_FromLong(gap + max_prime);
+    size_t prime_count;
+    auto composites = sieve_util::sieve(n, gap, max_prime, prime_count);
+
+    PyObject* pylist = PyList_New( composites.size() );
+
+    for (size_t i = 0; i < composites.size(); i++) {
+        PyList_SET_ITEM(pylist, i, PyBool_FromLong(composites[i]));
+    }
+
+    // Convert to new tuple object and return that.
+    return pylist;
 }
 
 
@@ -90,8 +123,6 @@ sieve_limit(PyObject *self, PyObject *args)
     if (gap < 2) {
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
     }
-
-
 
     return PyLong_FromLong(sieve_util::calculate_sievelimit(n_bits, gap));
 }
