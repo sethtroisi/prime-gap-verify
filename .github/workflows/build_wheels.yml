@@ -27,6 +27,7 @@ jobs:
           python -m pip install cibuildwheel
       - name: Build wheels
         env:
+          CIBW_ENVIRONMENT: "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib"
           CIBW_BEFORE_BUILD: bash .github/scripts/install_gmp.sh
           CIBW_BUILD: cp3?-*
           CIBW_SKIP: pp*

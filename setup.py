@@ -3,6 +3,7 @@ from setuptools import setup, Extension, find_packages
 ext = Extension(
     "verify",
     libraries=["gmp", "primesieve"],
+    library_dirs=["/usr/local/lib"],
     sources=[
         "verify/verifymodule.cpp",
         "verify/verify.cpp",
