@@ -10,3 +10,5 @@ a.out
 __pycache__
 
 build/
+dist/
+primegapverify.egg-info/
