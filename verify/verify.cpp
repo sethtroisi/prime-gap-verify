@@ -13,6 +13,9 @@
 // limitations under the License.
 
 #include "verify.hpp"
+#include "sieve_util.hpp"
+
+#include <gmp.h>
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
@@ -32,6 +35,22 @@ const char doc_sieve_interval[] = R"EOF(
            Offsets of numbers not known to be composite3
 )EOF";
 
+const char doc_sieve_limit[] = R"EOF(
+    Determine a reasonable max prime for sieve_interval
+
+    Takes the same parameters (N, distance) and returns a good max_prime
+)EOF";
+
+
+void set_mpz_from_int_str(mpz_t *n, PyObject* n_str) {
+    // Probably works for both int & str input.
+    PyObject *s = PyObject_Str(n_str);
+    //printf("Hi '%s'\n", s);
+    //mpz_set_str(n, s, 10);
+
+    Py_XDECREF(s);
+}
+
 PyObject*
 sieve_interval(PyObject *self, PyObject *args)
 {
@@ -42,5 +61,37 @@ sieve_interval(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "Oii", &start, &gap, &max_prime))
         return NULL;
 
+    if (max_prime <= 10) {
+        return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
+    }
+
+    if (gap < 2) {
+        return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
+    }
+
+
     return PyLong_FromLong(gap + max_prime);
+}
+
+
+PyObject*
+sieve_limit(PyObject *self, PyObject *args)
+{
+    double n_bits;
+    int gap;
+
+    if (!PyArg_ParseTuple(args, "di", &n_bits, &gap))
+        return NULL;
+
+    if (n_bits < 1 || n_bits > 100000) {
+        return PyErr_Format(PyExc_ValueError, "bad n_bits(%d)", n_bits);
+    }
+
+    if (gap < 2) {
+        return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
+    }
+
+
+
+    return PyLong_FromLong(sieve_util::calculate_sievelimit(n_bits, gap));
 }

@@ -1,7 +1,7 @@
 from distutils.core import setup, Extension
 
 ext = Extension(
-    "_verify",
+    "verify",
     libraries = ["gmp", "primesieve"],
     sources = [
         "verify/verifymodule.cpp",
@@ -13,7 +13,7 @@ ext = Extension(
 
 setup(
 	name="primegapverify",
-	version="0.2",
+	version="0.3",
     author="Seth Troisi",
     author_email="sethtroisi@google.com",
     license='Apache License 2.0',

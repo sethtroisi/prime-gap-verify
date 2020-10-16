@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import _verify
+import verify
 
 def parse_primorial(number):
     pass
