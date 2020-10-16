@@ -14,7 +14,7 @@ ext = Extension(
 
 setup(
     name="primegapverify",
-    version="0.3",
+    version="0.3a",
     author="Seth Troisi",
     author_email="sethtroisi@google.com",
     license="Apache License 2.0",
