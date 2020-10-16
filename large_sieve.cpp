@@ -29,8 +29,8 @@
  * [1] See math in next_prime.c in gmp-lib (by Seth)
  */
 
-#include "primes.hpp"
-#include "sieve_util.hpp"
+#include "verify/primes.hpp"
+#include "verify/sieve_util.hpp"
 
 #include <cstdint>
 #include <cstdio>

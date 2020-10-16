@@ -12,22 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "primegapverify.hpp"
+#pragma once
 
 #include <Python.h>
 
-PyObject*
-spam_system(PyObject *self, PyObject *args)
-{
-    const char *command;
-    int sts;
+extern const char doc_sieve_interval[];
 
-    if (!PyArg_ParseTuple(args, "s", &command))
-        return NULL;
-    sts = system(command);
-    if (sts < 0) {
-        PyErr_SetString(PyExc_RuntimeError, "System 2command failed");
-        return NULL;
-    }
-    return PyLong_FromLong(sts);
-}
+PyObject* sieve_interval(PyObject *self, PyObject *args);

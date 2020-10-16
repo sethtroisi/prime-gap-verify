@@ -1,7 +1,12 @@
 large_sieve
+
+tests.txt
+pfgw.*
+
 a.out
 *.o
 *.so
 
-tests.txt
-pfgw.*
+__pycache__
+
+build/

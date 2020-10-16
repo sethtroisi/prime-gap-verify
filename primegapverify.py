@@ -12,28 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import _verify
 
-OBJS	= verify/primes.o verify/sieve_util.o
-OUT	= large_sieve
-CC	= g++
-CFLAGS	= -Wall -Werror -O3
-# Need for local gmp / primesieve
-LDFLAGS	= -L /usr/local/lib -lgmp -lprimesieve
-#LDFLAGS	= -lgmp -lprimesieve
-DEFINES =
+def parse_primorial(number):
+    pass
 
-%.o: %.cpp
-	$(CC) -c -o $@ $< $(CFLAGS) $(DEFINES)
 
-all: $(OUT) primegapverify
+def sieve(start, gap, max_prime=None):
+    pass
 
-primegapverify: $(OBJS)
-	python setup.py build_ext --inplace
 
-large_sieve : %: %.cpp $(OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS) $(DEFINES)
-
-.PHONY: clean
-
-clean:
-	rm -rf $(OBJS) $(OUT) *.so __pycache__/ verify/*.so verify/__pycache__/ verify/build/
+def test(start, gap, max_prime=None):
+    pass
