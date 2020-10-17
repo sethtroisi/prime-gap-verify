@@ -25,7 +25,7 @@ def test_sieve():
             (1001, 1000, 10),
             (1001, 100, 50),
             (1001, 1000, 50),
-            (1, 1000, 50),
+            (5, 1000, 3),
    ):
         expect = brute(s, g, mp)
         result = primegapverify.sieve(s, g, mp)
@@ -36,10 +36,18 @@ def test_sieve_primepi():
     for s, g, mp, expected in (
         (101, 100, 20, 21),
         (101, 100, 100, 21),
-        (101, 100, 1000, 0),
         (1001, 1000, 3, 334),
         (1001, 1000, 30, 151),
         (1001, 1000, 50, 135),
         (1000001, 10000, 1100, 753),
     ):
         assert expected == primegapverify.sieve(s, g, mp).count(False)
+
+def test_validate():
+    for s, g in ((101, 2), (103, 4), (113, 14), (360653, 96),
+                 (18361375334787046697, 1550),
+                 (9691983639208775401081992556968666567067, 2982)):
+        assert primegapverify.validate(s, g)
+        if g > 2:
+            assert not primegapverify.validate(s, g - 2)
+        assert not primegapverify.validate(s, g + 2)
