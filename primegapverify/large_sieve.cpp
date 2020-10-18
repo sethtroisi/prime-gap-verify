@@ -41,7 +41,7 @@
 typedef long long ll;
 
 void print_usage(char *name) {
-    printf("Usage %s  m P d a gapsize\n\n", name);
+    printf("Usage %s  m P d a gapsize [limit]\n\n", name);
     printf("Sieve and ouput numbers to check (including endpoints)\n\n");
 }
 
@@ -57,7 +57,7 @@ void calc_N(mpz_t &N, ll m, ll p, ll d, ll a) {
 }
 
 int main(int argc, char ** argv) {
-    if (argc != 6) {
+    if (argc < 6 || argc > 7) {
         print_usage(argv[0]);
         exit(1);
     }
@@ -68,6 +68,10 @@ int main(int argc, char ** argv) {
     ll d = atol(argv[3]);
     ll a = atol(argv[4]);
     ll gap = atol(argv[5]);
+    uint64_t limit = 0;
+    if (argc == 7) {
+        limit = atol(argv[6]);
+    }
 
     if (m <= 0 || m > INT32_MAX) {
         printf("Invalid m=%lld\n", m);
@@ -98,6 +102,10 @@ int main(int argc, char ** argv) {
         exit(1);
     }
 
+    if (limit > 11'000'000'000'000) {
+        printf("Invalid limit=%ld\n", limit);
+    }
+
 	fprintf(stderr, "sieving %lld * %lld# / %lld + [%lld, %lld]\n", m, p, d, a, a+gap);
 
     /* N = m * P# / d - a */
@@ -107,7 +115,9 @@ int main(int argc, char ** argv) {
 
     /* Input stats */
     int bits = mpz_sizeinbase(N, 2);
-    uint64_t limit = sieve_util::calculate_sievelimit(bits, gap);
+    if (limit == 0) {
+        limit = sieve_util::calculate_sievelimit(bits, gap);
+    }
     fprintf(stderr, "bits: %5d  gap: %6lld  limit: %'ld\n", bits, gap, limit);
     fprintf(stderr, "expect ~~%.0f remaining\n", 1.0 * gap / (log(limit) * 1.7811));
 
