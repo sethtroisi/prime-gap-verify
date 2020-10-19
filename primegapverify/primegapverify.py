@@ -17,10 +17,6 @@ import verify as _verify
 
 import gmpy2
 
-def parse_primorial(number):
-    pass
-
-
 def sieve(start, gap, max_prime=None):
     if max_prime is None or max_prime == 0:
         max_prime = _verify.sieve_limit(math.log2(start), gap)

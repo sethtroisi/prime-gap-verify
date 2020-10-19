@@ -35,6 +35,17 @@ def primorial(k):
     # TODO assert k is actually prime
     return int(gmpy2.primorial(k))
 
+
+def parse(num_str):
+    match = parse_primorial_standard_form(num_str)
+    if match is None:
+        return match
+
+    P = primorial(match[1])
+    K, rem = divmod(P, match[2])
+    return match[0] * K + match[3]
+
+
 def parse_primorial_standard_form(num_str):
     '''Return (m, P, d, a) => m * P#/d + a, (with a < 0)'''
 
