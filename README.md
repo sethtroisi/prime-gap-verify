@@ -39,3 +39,10 @@ sudo pip install gmpy2==2.1.0b5
 [GMPlib's](https://gmplib.org/)
 [`mpz_probab_prime_p`](https://gmplib.org/manual/Number-Theoretic-Functions#Number-Theoretic-Functions)
 or [OpenPFGW](https://sourceforge.net/projects/openpfgw/).
+
+
+## TODO
+
+* [ ] Parse string ("123 * 73# / 5# - 1000" to primorial form)
+* [ ] `isPrimeLarge` using pfgw
+* [ ] Estimated PRP/s using benchmark & interpolation
