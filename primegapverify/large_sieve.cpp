@@ -127,7 +127,7 @@ int main(int argc, char ** argv) {
     assert(composite.size() == odds);
 
     /* Final stats */
-    size_t unknowns = std::count(composite.begin(), composite.end(), false);
+    size_t unknowns = std::count(composite.begin(), composite.end(), 0);
     size_t count_c = gap - unknowns;
     fprintf(stderr, "%lld / %lld = %.2f composite, %ld remaining (primes %ld)\n",
             gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);

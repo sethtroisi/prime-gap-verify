@@ -13,13 +13,13 @@
 # limitations under the License.
 
 import math
-import verify as _verify
+import verify as verify
 
 import gmpy2
 
 def sieve(start, gap, max_prime=None):
     if max_prime is None or max_prime == 0:
-        max_prime = _verify.sieve_limit(math.log2(start), gap)
+        max_prime = verify.sieve_limit(math.log2(start), gap)
 
         # Needed if really small start
         if max_prime >= start:
@@ -30,7 +30,7 @@ def sieve(start, gap, max_prime=None):
 
     assert start > max_prime, (start, max_prime)
 
-    return _verify.sieve_interval(str(start), gap, max_prime)
+    return verify.sieve_interval(str(start), gap, max_prime)
 
 
 def validate(start, gap, max_prime=None):
@@ -48,9 +48,10 @@ def validate(start, gap, max_prime=None):
 
     composites = sieve(start, gap, max_prime)
     for i, composite in enumerate(composites[1:-1], 1):
-        if not composite and gmpy2.is_prime(start + 2 * i):
-            print ("Interior point is prime: start +", 2 * i)
+        if i % 2 == 1:
+            assert composite # all evens should be composite
+        if not composite and gmpy2.is_prime(start + i):
+            print ("Interior point is prime: start +", i)
             return False
-
 
     return True

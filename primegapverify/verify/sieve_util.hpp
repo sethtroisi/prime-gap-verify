@@ -23,5 +23,5 @@ namespace sieve_util {
     const uint64_t MAX_LIMIT = 10'000'000'000;
 
     uint64_t calculate_sievelimit(double n_bits, double gap);
-    std::vector<bool> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count);
+    std::vector<char> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count);
 }

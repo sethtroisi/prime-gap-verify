@@ -48,10 +48,15 @@ namespace sieve_util {
     }
 
 
-    std::vector<bool> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count) {
+    std::vector<char> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count) {
         // Sieve
-        size_t odds = gap / 2 + 1;
-        std::vector<bool> composite(odds, 0);
+        std::vector<char> composite(gap + 1, 0);
+
+        // Handle all evens
+        uint64_t first = mpz_cdiv_ui(N, 2);
+        for (uint32_t d = first; d <= gap; d += 2) {
+            composite[d] = true;
+        }
 
         prime_count = 1;
         primes::iterator iter;
@@ -69,7 +74,7 @@ namespace sieve_util {
             }
 
             for (uint32_t d = first; d <= gap; d += 2 * prime) {
-                composite[d / 2] = true;
+                composite[d] = true;
             }
         }
 
@@ -91,7 +96,7 @@ namespace sieve_util {
         }
 
         assert(composite[0] == false);
-        assert(composite[odds-1] == false);
+        assert(composite[gap] == false);
 
         // Possible a vector copy, but fast in the overall scheme of things.
         return composite;

@@ -16,7 +16,7 @@ import primegapverify
 
 def brute(s, g, mp):
     return [n % 2 == 0 or any(n % p == 0 for p in range(3, mp+1, 2))
-        for n in range(s, s + g + 1, 2)]
+        for n in range(s, s + g + 1)]
 
 
 def test_sieve():
@@ -29,7 +29,11 @@ def test_sieve():
    ):
         expect = brute(s, g, mp)
         result = primegapverify.sieve(s, g, mp)
+        print (len(expect), len(result))
+        print([1 * v for v in expect])
+        print([1 * v for v in result])
         assert expect == result
+
 
 def test_sieve_primepi():
     # Easy to generate these with `primesieve <start> <start + gap>
@@ -42,6 +46,7 @@ def test_sieve_primepi():
         (1000001, 10000, 1100, 753),
     ):
         assert expected == primegapverify.sieve(s, g, mp).count(False)
+
 
 def test_validate():
     for s, g in ((101, 2), (103, 4), (113, 14), (360653, 96),
