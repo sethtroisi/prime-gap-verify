@@ -65,10 +65,10 @@ PyObject*
 sieve_interval(PyObject *self, PyObject *args)
 {
     PyObject *start;
-    int gap;
-    int max_prime;
+    uint64_t gap;
+    uint64_t max_prime;
 
-    if (!PyArg_ParseTuple(args, "Oii", &start, &gap, &max_prime))
+    if (!PyArg_ParseTuple(args, "OLL", &start, &gap, &max_prime))
         return NULL;
 
     // TODO: validate N is odd.

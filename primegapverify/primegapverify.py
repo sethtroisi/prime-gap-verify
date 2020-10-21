@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import math
-import verify as verify
+import verify
 
 import gmpy2
 
