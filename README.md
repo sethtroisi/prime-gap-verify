@@ -20,6 +20,8 @@ Python library to verify prime gaps for
 
 ## Testing
 
+If I remove `__init__.py` everything works but I need `__init__.py` for `python setup.py install`
+Not sure how to fix. Wasted 3 hours already.
 ```bash
 cd primegapverify
 python -m pytest
