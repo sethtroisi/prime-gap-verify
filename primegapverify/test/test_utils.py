@@ -59,6 +59,9 @@ def test_validate():
         assert not utils.validate(s, g + 2)
 
 
+def test_check_pfgw_available():
+    assert utils.check_pfgw_available()
+
 NUM_STATUS = (
         ("31# +1", True),
         ("379# +1", True),
@@ -69,9 +72,15 @@ NUM_STATUS = (
         ("503# -659", True)
 )
 
+
 def test_is_prime_large():
     for str_num, result in NUM_STATUS:
         num = parsenumber.parse(str_num)
-        print ("Hi", str_num, num)
         assert utils.is_prime_large(num) == result
         assert utils.is_prime_large(num, str_num) == result
+
+def test__is_prime_pfgw():
+    for str_num, result in NUM_STATUS:
+        num = parsenumber.parse(str_num)
+        assert utils._is_prime_pfgw(num) == result
+        assert utils._is_prime_pfgw(str_num) == result
