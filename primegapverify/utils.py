@@ -81,7 +81,8 @@ def _is_prime_pfgw(num):
     # Overhead of subprocess calls seems to be ~0.03
     # Process seems to use more than 1 thread
     s = subprocess.getstatusoutput(f"pfgw64 -f0 -q'{num}'")
-    assert s[1].startswith('PFGW'), s
+    #assert s[1].startswith('PFGW'), s
+    assert "PFGW" in s[1], s
     return s[0] == 0
 
 
