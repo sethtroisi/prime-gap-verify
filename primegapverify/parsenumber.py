@@ -30,6 +30,8 @@ MPDDA_RE_2 = re.compile(r"^(\d+)\*(\d+)#/\((\d+)#\*(\d+)\)([+-]\d+)$")
 PDA_RE_1 = re.compile(r"^\(?(\d+)#\)?/(\d+)([+-]\d+)$")
 # No m, primorial d     | P# / d# +- a
 PDA_RE_2 = re.compile(r"^\(?(\d+)#\)?/(\d+)#([+-]\d+)$")
+# No m, no d            | P# +- a
+PA_RE_1 = re.compile(r"^(\d+)#([+-]\d+)$")
 
 def primorial(k):
     # TODO assert k is actually prime
@@ -38,12 +40,14 @@ def primorial(k):
 
 def parse(num_str):
     match = parse_primorial_standard_form(num_str)
-    if match is None:
-        return match
+    if match is not None:
+        P = primorial(match[1])
+        K, rem = divmod(P, match[2])
+        return match[0] * K + match[3]
 
-    P = primorial(match[1])
-    K, rem = divmod(P, match[2])
-    return match[0] * K + match[3]
+    # TODO other common forms (b^p + a)
+
+    return None
 
 
 def parse_primorial_standard_form(num_str):
@@ -86,5 +90,10 @@ def parse_primorial_standard_form(num_str):
         p, dp, a = map(int, match.groups())
         D = primorial(dp)
         return (1, p, D, a)
+
+    match = PA_RE_1.match(num_str)
+    if match:
+        p, a = map(int, match.groups())
+        return (1, p, 1, a)
 
     return None

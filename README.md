@@ -43,6 +43,6 @@ or [OpenPFGW](https://sourceforge.net/projects/openpfgw/).
 
 ## TODO
 
-* [ ] Parse string ("123 * 73# / 5# - 1000" to primorial form)
 * [ ] `isPrimeLarge` using pfgw
 * [ ] Estimated PRP/s using benchmark & interpolation
+* [x] Parse string ("123 * 73# / 5# - 1000" to primorial form)
