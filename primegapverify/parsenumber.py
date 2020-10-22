@@ -33,19 +33,35 @@ PDA_RE_2 = re.compile(r"^\(?(\d+)#\)?/(\d+)#([+-]\d+)$")
 # No m, no d            | P# +- a
 PA_RE_1 = re.compile(r"^(\d+)#([+-]\d+)$")
 
+# power form            | b ^ p +- a
+POWER_BPA_RE_1 = re.compile(r"^(\d+)\^(\d+)([+-]\d+)$")
+
+
 def primorial(k):
     # TODO assert k is actually prime
     return int(gmpy2.primorial(k))
 
 
 def parse(num_str):
+    # Remove all spaces
+    num_str = re.sub(r"\s+", "", num_str)
+
     match = parse_primorial_standard_form(num_str)
     if match is not None:
-        P = primorial(match[1])
-        K, rem = divmod(P, match[2])
-        return match[0] * K + match[3]
+        m, p, d, a = match
+        P = primorial(p)
+        K, rem = divmod(P, d)
+        if rem != 0:
+            return None
+        return m * K + a
 
-    # TODO other common forms (b^p + a)
+    num_match = POWER_BPA_RE_1.match(num_str)
+    if num_match:
+        b, p, a = map(int, num_match.groups())
+        if b <= 0:
+            # Order of operations is hard
+            return None
+        return b ** p + a
 
     return None
 
