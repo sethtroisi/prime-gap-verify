@@ -55,3 +55,41 @@ def validate(start, gap, max_prime=None):
             return False
 
     return True
+
+
+def is_prime_large(num, str_num=None):
+    """Determine if num is prime.
+
+    Uses gmpy2.is_prime() or pfgw.
+    gmpy2.is_prime() is ~5x slower on primes than composites.
+    pfgw is same speed for primes & composites.
+
+    for pfgw uses "-q(str_num or str(num))" when log2(num) > 8000
+
+    https://github.com/sethtroisi/misc-scripts/tree/main/prime-time
+    https://github.com/aleaxit/gmpy/issues/265
+    """
+    if gmpy2.num_digits(num) > 8000:
+        is_prime_pfgw(str_num or str(num))
+
+    return gmpy2.is_prime(num)
+
+
+def _is_prime_pfgw(num):
+    # Overhead of subprocess calls seems to be ~0.03
+    # Process seems to use more than 1 thread
+    s = subprocess.getstatusoutput(f"pfgw64 -f0 -q'{num}")
+    assert s[1].startswith('PFGW'), s
+    return s[0] == 0
+
+
+def check_pfgw_available():
+    s = subprocess.getstatusoutput("gw64 -k -f0 -q'10^700 + 7'")
+    if not (s[0] == 0 and s[1].startswith("10^700 + 7 is 3-PRP! ")):
+        return False
+
+    t = subprocess.getstatusoutput("gw64 -k -f0 -q'10^700 + 3'")
+    if not (t[0] == 0 and t[1].startswith("10^700 + 3 is composite: RES64: [626E304F7BB1C10E] ")):
+        return False
+
+    return True

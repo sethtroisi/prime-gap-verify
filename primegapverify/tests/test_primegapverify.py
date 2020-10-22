@@ -56,3 +56,21 @@ def test_validate():
         if g > 2:
             assert not primegapverify.validate(s, g - 2)
         assert not primegapverify.validate(s, g + 2)
+
+
+NUM_STATUS = (
+        ("31# +1", True),
+        ("379# +1", True),
+        ("1019# +1", True),
+        ("2657# +1", True),
+        ("503# -617", False),
+        ("503# -631", False),
+        ("503# -659", True)
+)
+
+def test_is_prime_large():
+    for str_num, result in NUM_STATUS:
+        num = primegapverify.parse(str_num)
+        print (num)
+        assert primegapverify.is_prime_large(num) == result
+        assert primegapverify.is_prime_large(num, str_num) == result
