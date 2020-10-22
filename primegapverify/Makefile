@@ -33,4 +33,4 @@ large_sieve : %: %.cpp $(OBJS)
 .PHONY: clean
 
 clean:
-	rm -rf $(OBJS) $(OUT) *.so __pycache__/
+	rm -rf $(OBJS) $(OUT) *.so __pycache__/ test/__pycache__ pfgw.ini pfgw.log
