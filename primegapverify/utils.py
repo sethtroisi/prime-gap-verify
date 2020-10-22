@@ -72,7 +72,7 @@ def is_prime_large(num, str_num=None):
     https://github.com/aleaxit/gmpy/issues/265
     """
     if gmpy2.num_digits(num, 2) > 8000:
-        _is_prime_pfgw(str_num or str(num))
+        return _is_prime_pfgw(str_num or str(num))
 
     return gmpy2.is_prime(num)
 
