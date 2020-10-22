@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import primegapverify
+import parsenumber
+import utils
 
 def brute(s, g, mp):
     return [n % 2 == 0 or any(n % p == 0 for p in range(3, mp+1, 2))
@@ -28,7 +29,7 @@ def test_sieve():
         (5, 1000, 3),
    ):
         expect = brute(s, g, mp)
-        result = primegapverify.sieve(s, g, mp)
+        result = utils.sieve(s, g, mp)
         print (len(expect), len(result))
         print([1 * v for v in expect])
         print([1 * v for v in result])
@@ -45,17 +46,17 @@ def test_sieve_primepi():
         (1001, 1000, 50, 135),
         (1000001, 10000, 1100, 753),
     ):
-        assert expected == primegapverify.sieve(s, g, mp).count(False)
+        assert expected == utils.sieve(s, g, mp).count(False)
 
 
 def test_validate():
     for s, g in ((101, 2), (103, 4), (113, 14), (360653, 96),
                  (18361375334787046697, 1550),
                  (9691983639208775401081992556968666567067, 2982)):
-        assert primegapverify.validate(s, g)
+        assert utils.validate(s, g)
         if g > 2:
-            assert not primegapverify.validate(s, g - 2)
-        assert not primegapverify.validate(s, g + 2)
+            assert not utils.validate(s, g - 2)
+        assert not utils.validate(s, g + 2)
 
 
 NUM_STATUS = (
@@ -70,7 +71,7 @@ NUM_STATUS = (
 
 def test_is_prime_large():
     for str_num, result in NUM_STATUS:
-        num = primegapverify.parse(str_num)
-        print (num)
-        assert primegapverify.is_prime_large(num) == result
-        assert primegapverify.is_prime_large(num, str_num) == result
+        num = parsenumber.parse(str_num)
+        print ("Hi", str_num, num)
+        assert utils.is_prime_large(num) == result
+        assert utils.is_prime_large(num, str_num) == result

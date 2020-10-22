@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from primegapverify import parse_primorial_standard_form, parse
+import parsenumber
 
 # Standard form         | m * P# / d +- a
 # primorial d           | m * P# / d# +- a
@@ -41,14 +41,14 @@ def test_parse():
         ("11# / 5 + 17", (1, 11, 5, 17)),
         ("11# / 5# + 17", (1, 11, 2*3*5, 17)),
     ):
-        assert parse_primorial_standard_form(num_str) == components
+        assert parsenumber.parse_primorial_standard_form(num_str) == components
 
 
 def test_not_parse():
     for num_str in (
         "5 * 7# / 3 + - 13",
     ):
-        assert parse_primorial_standard_form(num_str) is None
+        assert parsenumber.parse_primorial_standard_form(num_str) is None
 
 
 def test_parse():
@@ -57,5 +57,5 @@ def test_parse():
         ("5 * 11# / (7*5) - 13", (5 * 11 * 3 * 2 - 13)),
         ("11# / 5# + 17", (11 * 7 + 17)),
     ):
-        assert parse(num_str) == n
+        assert parsenumber.parse(num_str) == n
 
