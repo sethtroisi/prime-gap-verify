@@ -14,6 +14,7 @@
 
 import math
 import subprocess
+import time
 
 import gmpy2
 
@@ -35,26 +36,46 @@ def sieve(start, gap, max_prime=None):
     return verify.sieve_interval(str(start), gap, max_prime)
 
 
-def validate(start, gap, max_prime=None):
+def validate(start, gap, max_prime=None, verbose=False):
     """Validate start, start+gap are prime and the interior is composite"""
 
     # TODO: Verbose printing or return
 
     if not gmpy2.is_prime(start):
-        print ("Start not prime!")
+        print("Start not prime!")
         return False
 
     if not gmpy2.is_prime(start + gap):
-        print ("End not prime!")
+        print("End not prime!")
         return False
 
+    if max_prime is None or max_prime == 0:
+        max_prime = verify.sieve_limit(math.log2(start), gap)
+
+    if verbose:
+        print("Sieving up to {:,}".format(max_prime))
+        t0 = time.time()
+
     composites = sieve(start, gap, max_prime)
+
+    if verbose:
+        t1 = time.time()
+        count_unknowns = composites.count(False)
+        test_i = 0
+        print("Sieve finished {} to test ({:.3f} seconds)".format(
+            count_unknowns, t1 - t0))
+
+
     for i, composite in enumerate(composites[1:-1], 1):
         if i % 2 == 1:
             assert composite # all evens should be composite
-        if not composite and gmpy2.is_prime(start + i):
-            print ("Interior point is prime: start +", i)
-            return False
+        if not composite:
+            if verbose:
+                test_i += 1
+                print("Testing {}, {}/{}".format(i, test_i, count_unknowns))
+            if gmpy2.is_prime(start + i):
+                print("Interior point is prime: start +", i)
+                return False
 
     return True
 
