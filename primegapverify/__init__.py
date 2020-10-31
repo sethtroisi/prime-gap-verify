@@ -14,10 +14,12 @@
 
 from .utils import sieve, validate, is_prime_large, check_pfgw_available
 from .parsenumber import parse_primorial_standard_form, parse
+from verify import sieve_limit
 from ._version import __version__
 
 __all__ = [
     "parse_primorial_standard_form", "parse",
     "sieve", "validate",
-    "is_prime_large", "check_pfgw_available"
+    "is_prime_large", "check_pfgw_available",
+    "sieve_limit",
 ]
