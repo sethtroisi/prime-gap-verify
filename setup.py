@@ -10,6 +10,7 @@ ext = Extension(
         "primegapverify/verify/primes.cpp",
         "primegapverify/verify/sieve_util.cpp",
     ],
+    undef_macros=['NDEBUG'],
 )
 
 # Load version without trying to load module

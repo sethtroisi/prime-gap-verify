@@ -32,7 +32,6 @@ def sieve(start, gap, max_prime=None):
             max_prime = 3
 
     assert start > max_prime, (start, max_prime)
-
     return verify.sieve_interval(str(start), gap, max_prime)
 
 
@@ -51,6 +50,7 @@ def validate(start, gap, max_prime=None, verbose=False):
 
     if max_prime is None or max_prime == 0:
         max_prime = verify.sieve_limit(math.log2(start), gap)
+
 
     if verbose:
         print("Sieving up to {:,}".format(max_prime))

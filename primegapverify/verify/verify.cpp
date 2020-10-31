@@ -73,7 +73,7 @@ sieve_interval(PyObject *self, PyObject *args)
 
     // TODO: validate N is odd.
 
-    if (max_prime <= 2) {
+    if (max_prime == 0 || max_prime >= 51'000'000'000) {
         return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
     }
 

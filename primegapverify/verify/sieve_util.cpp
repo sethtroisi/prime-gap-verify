@@ -43,7 +43,10 @@ namespace sieve_util {
             fprintf(stderr, "LARGE LIMIT=%.2e\n", limit);
             limit = MAX_LIMIT;
         }
-        assert(limit > 1000);
+        if (limit <= 0) {
+            // impossible(?) but be safe
+            limit = 1;
+        }
         return limit;
     }
 
@@ -95,8 +98,8 @@ namespace sieve_util {
             }
         }
 
-        assert(composite[0] == false);
-        assert(composite[gap] == false);
+        //assert(composite[0] == false);
+        //assert(composite[gap] == false);
 
         // Possible a vector copy, but fast in the overall scheme of things.
         return composite;
