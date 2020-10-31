@@ -41,7 +41,15 @@ const char doc_sieve_interval[] = R"EOF(
 const char doc_sieve_limit[] = R"EOF(
     Determine a reasonable max prime for sieve_interval
 
-    Takes the same parameters (N, distance) and returns a good max_prime
+    Parameters
+    ----------
+       log2_n : Number of bits in N
+       gap: size of interval
+
+    Returns
+    -------
+       max_prime : int
+           Reasonable prime to pass to sieve_interval
 )EOF";
 
 
