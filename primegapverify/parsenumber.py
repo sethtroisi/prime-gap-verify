@@ -46,6 +46,9 @@ def parse(num_str):
     # Remove all spaces
     num_str = re.sub(r"\s+", "", num_str)
 
+    if num_str.isdigit():
+        return int(num_str)
+
     match = parse_primorial_standard_form(num_str)
     if match is not None:
         m, p, d, a = match
