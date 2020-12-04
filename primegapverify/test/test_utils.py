@@ -12,16 +12,53 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import math
+
+import gmpy2
+
 import parsenumber
 import utils
 
+
 def brute(s, g, mp):
-    return [n % 2 == 0 or any(n % p == 0 for p in range(3, mp+1, 2))
-        for n in range(s, s + g + 1)]
+    end = s + g
+    composite = [n % 2 == 0 for n in range(s, end + 1)]
+
+    if s <= 1 <= end:
+        # 1 is composite
+        composite[1 - s] = True
+
+    if s <= 2 <= end:
+        # 2 is prime
+        composite[2 - s] = False
+
+    last = min(int(math.sqrt(end)) + 1, mp)
+    assert last == mp or last * last >= end
+
+    # check if odds have small factors
+    for p in range(3, mp+1, 2):
+        # mark off all factors p*p + i*p
+        p2 = p * p
+        if p2 >= s:
+            start = p2 - s
+        else:
+            # First odd multiple > s
+            div, start = divmod(-s, p)
+            if div % 2 == 0:
+                start += p
+
+        print(p, p2, "\t", start, p, start + s)
+        for m in range(start, g+1, 2*p):
+            composite[m] = True
+
+    return composite
 
 
 def test_sieve():
     for s, g, mp in (
+        (1, 100, 10),
+        (11, 89, 10),
+        (100, 100, 10),
         (1001, 100, 10),
         (1001, 1000, 10),
         (1001, 100, 50),
@@ -30,15 +67,21 @@ def test_sieve():
    ):
         expect = brute(s, g, mp)
         result = utils.sieve(s, g, mp)
-        print (len(expect), len(result))
-        print([1 * v for v in expect])
-        print([1 * v for v in result])
-        assert expect == result
+        print ("[{}, {}] max_prime: {}".format(s, s+g, mp))
+        assert len(expect) == len(result)
+        #print([1 * v for v in expect])
+        #print([1 * v for v in result])
+        #print([s + i for i, v in enumerate(expect) if v])
+        print([(s+i, a, b) for i, (a, b) in enumerate(zip(expect, result)) if a != b])
+        assert expect == result, (s, g, mp)
 
 
 def test_sieve_primepi():
     # Easy to generate these with `primesieve <start> <start + gap>
     for s, g, mp, expected in (
+        (0,  100, 10, 25),
+        (1,   99, 10, 25),
+        (1,   99, 100, 25),
         (101, 100, 20, 21),
         (101, 100, 100, 21),
         (1001, 1000, 3, 334),
@@ -48,6 +91,51 @@ def test_sieve_primepi():
     ):
         assert expected == utils.sieve(s, g, mp).count(False)
 
+
+def test_max_prime_overlaps_interval():
+    # Test when max_prime > N
+    for s, g, mp, expected in (
+        (1, 99, 2, 50),
+        (1, 99, 3, 34),
+        (1, 99, 5, 28),
+        (1, 99, 7, 25),
+        (1, 99, 11, 25),
+        (1, 99, 100, 25),
+        (1, 99, 200, 25),
+    ):
+        #print (s, g, mp, expected, [s+i for i, v in enumerate(utils.sieve(s, g, mp)) if not v])
+        assert expected == utils.sieve(s, g, mp).count(False)
+        assert utils.sieve(s, g, mp) == brute(s, g, mp)
+
+def test_limit_limitted():
+    # Test that limit is decreased to sqrt(s + g)
+    mp = 10 ** 10
+    for s, g, expected in (
+        (1, 99, 25),
+        (1000, 1000, 135),
+        (10 ** 6, 100, 6),
+        (10 ** 9, 100, 7),
+    ):
+        composites = utils.sieve(s, g, mp)
+        for i, c in enumerate(composites):
+            assert gmpy2.is_prime(s + i) == (not c)
+        assert expected == composites.count(False)
+
+def test_zero_one_composite():
+    # Test that 0, 1 are "composite" in our sieve
+    for s, g in (
+        (0, 10),
+        (1, 5),
+        (0, 1),
+        (0, 2),
+        (1, 1),
+        (1, 2)
+    ):
+        composites = utils.sieve(s, g, 10)
+        if s == 0:
+            assert composites[0] == True
+        if s + g - 1 >= 1:
+            assert composites[1 - s] == True
 
 def test_validate():
     for s, g in ((101, 2), (103, 4), (113, 14), (360653, 96),
@@ -60,7 +148,7 @@ def test_validate():
 
 
 def test_check_pfgw_available():
-    assert utils.check_pfgw_available()
+    assert utils.check_pfgw_available(), "Assumed to be true on dev machines"
 
 
 NUM_STATUS = (

@@ -32,9 +32,12 @@ const char doc_sieve_interval[] = R"EOF(
 
     Returns
     -------
-       composites : array
-           Status (composite or unknown) for each even distance number
-           from the start of the interval to the end.
+        composites : array
+            Status (composite or unknown) for each even distance number from
+            the start of the interval to the end. Never removes primes even if
+            max_prime > n
+
+
 )EOF";
 
 
@@ -79,13 +82,11 @@ sieve_interval(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "OLL", &start, &gap, &max_prime))
         return NULL;
 
-    // TODO: validate N is odd.
-
     if (max_prime == 0 || max_prime >= 51'000'000'000) {
         return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
     }
 
-    if (gap < 2) {
+    if ((gap <= 0) || (gap > (1L << 40))) {
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
     }
 
@@ -96,21 +97,23 @@ sieve_interval(PyObject *self, PyObject *args)
         PyErr_Format(PyExc_ValueError, "bad start(%S)", start);
         return NULL;
     }
-    if (mpz_even_p(n)) {
-        PyErr_Format(PyExc_ValueError, "even start(%S)", start);
+    if (mpz_sgn(n) < 0) {
+        PyErr_Format(PyExc_ValueError, "negative start(%S)", start);
         return NULL;
     }
 
     size_t prime_count;
     auto composites = sieve_util::sieve(n, gap, max_prime, prime_count);
+    if (!composites.size()) {
+        PyErr_Format(PyExc_ValueError, "sieve failed");
+    }
 
     PyObject* pylist = PyList_New( composites.size() );
-
     for (size_t i = 0; i < composites.size(); i++) {
         PyList_SET_ITEM(pylist, i, PyBool_FromLong(composites[i]));
     }
 
-    // Convert to new tuple object and return that.
+    // XXX: Convert to new tuple object and return that.
     return pylist;
 }
 
@@ -126,7 +129,7 @@ sieve_limit(PyObject *self, PyObject *args)
 
     if (n_bits < 1 || n_bits > 100000) {
         return PyErr_Format(PyExc_ValueError, "bad n_bits(%d)", n_bits);
-    }
+
 
     if (gap < 2) {
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
