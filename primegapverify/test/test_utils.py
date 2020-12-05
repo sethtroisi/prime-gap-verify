@@ -47,7 +47,6 @@ def brute(s, g, mp):
             if div % 2 == 0:
                 start += p
 
-        print(p, p2, "\t", start, p, start + s)
         for m in range(start, g+1, 2*p):
             composite[m] = True
 
@@ -67,7 +66,6 @@ def test_sieve():
    ):
         expect = brute(s, g, mp)
         result = utils.sieve(s, g, mp)
-        print ("[{}, {}] max_prime: {}".format(s, s+g, mp))
         assert len(expect) == len(result)
         #print([1 * v for v in expect])
         #print([1 * v for v in result])

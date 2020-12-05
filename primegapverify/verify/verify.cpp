@@ -26,16 +26,15 @@ const char doc_sieve_interval[] = R"EOF(
 
     Parameters
     ----------
-       N : start of interval (must be odd)
+       N : start of interval
        distance : size of interval
        max_prime : remove all multiples of primes less than or equal
 
     Returns
     -------
         composites : array
-            Status (composite or unknown) for each even distance number from
-            the start of the interval to the end. Never removes primes even if
-            max_prime > n
+            Status (composite or unknown) for distance+1 numbers [N, N+distance]
+            Never removes primes even if max_prime > N. 0 and 1 marked composite.
 
 
 )EOF";
@@ -129,7 +128,7 @@ sieve_limit(PyObject *self, PyObject *args)
 
     if (n_bits < 1 || n_bits > 100000) {
         return PyErr_Format(PyExc_ValueError, "bad n_bits(%d)", n_bits);
-
+    }
 
     if (gap < 2) {
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);

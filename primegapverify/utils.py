@@ -20,17 +20,23 @@ import gmpy2
 
 import verify
 
+def _get_max_prime(start, gap, max_prime):
+    if max_prime is None or max_prime <= 1:
+        log2 = float(gmpy2.log2(start + gap))
+        max_prime = verify.sieve_limit(log2, gap)
+    return max_prime
+
+
 def sieve(start, gap, max_prime=None):
     """
     Sieve [start, start+gap] marking all composite numbers with factors less
     than max_prime as composite.
     """
 
-    if max_prime is None or max_prime <= 1:
-        max_prime = verify.sieve_limit(math.log2(start), gap)
-
-    assert max_prime >= 2, max_prime
     assert start >= 0, ("Negative start! ", start)
+    assert gap >= 1, gap
+    max_prime = _get_max_prime(start, gap, max_prime)
+    assert max_prime >= 2, max_prime
 
     return verify.sieve_interval(str(start), gap, max_prime)
 
@@ -51,8 +57,7 @@ def validate(start, gap, max_prime=None, verbose=False):
         print("End not prime!")
         return False
 
-    if max_prime is None or max_prime <= 1000:
-        max_prime = verify.sieve_limit(math.log2(start), gap)
+    max_prime = _get_max_prime(start, gap, max_prime)
     assert max_prime >= 2, max_prime
 
     if verbose:
