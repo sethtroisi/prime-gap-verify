@@ -126,7 +126,7 @@ sieve_limit(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "di", &n_bits, &gap))
         return NULL;
 
-    if (n_bits < 1 || n_bits > 100000) {
+    if (n_bits < 1 || n_bits > 1'000'000) {
         return PyErr_Format(PyExc_ValueError, "bad n_bits(%d)", n_bits);
     }
 

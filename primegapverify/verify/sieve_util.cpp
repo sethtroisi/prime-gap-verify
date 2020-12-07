@@ -38,7 +38,7 @@ namespace sieve_util {
         // Average gap = bits * ln(2)
         double adj = gap / (n_bits * log(2));
 
-        double limit = adj * pow(1.0 * n_bits, 2.5) / 124.0;
+        double limit = adj * pow(n_bits, 2.5) / 124.0;
         if (limit > MAX_LIMIT) {
             fprintf(stderr, "LARGE LIMIT=%.2e\n", limit);
             limit = MAX_LIMIT;
