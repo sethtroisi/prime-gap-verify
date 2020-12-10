@@ -139,7 +139,7 @@ def test_validate():
     for s, g in ((101, 2), (103, 4), (113, 14), (360653, 96),
                  (18361375334787046697, 1550),
                  (9691983639208775401081992556968666567067, 2982)):
-        assert utils.validate(s, g)
+        assert utils.validate(s, g), (s, g)
         if g > 2:
             assert not utils.validate(s, g - 2)
         assert not utils.validate(s, g + 2)

@@ -65,6 +65,7 @@ def validate(start, gap, max_prime=None, verbose=False):
         t0 = time.time()
 
     composites = sieve(start, gap, max_prime)
+    assert gap + 1 == len(composites), (gap, len(composites))
 
     if verbose:
         t1 = time.time()
