@@ -74,7 +74,7 @@ def validate(start, gap, max_prime=None, verbose=False):
             count_unknowns, t1 - t0))
 
 
-    for i, composite in enumerate(composites[1:-1], 1):
+    for i, composite in enumerate(composites[1:-1], 3):
         if i % 2 == 1:
             assert composite # all evens should be composite
         if not composite:
