@@ -20,7 +20,7 @@ import parsenumber
 # two comp primorial d  | m * P# / (d# * d2) +- a
 # No m                  | P# / d +- a
 
-def test_parse():
+def test_parse_primorial_standard_form():
     for num_str, components in (
         # Standard form
         ("5 * 7# / 3 - 13", (5, 7, 3, -13)),
