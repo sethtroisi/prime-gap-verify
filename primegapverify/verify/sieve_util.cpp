@@ -52,6 +52,8 @@ namespace sieve_util {
         if ((gap < 0) || (gap > (1L << 40))) { return {}; }
         if (limit > (1L << 50)) { return {}; }
 
+        fprintf(stderr, "Printing factors of interval(%ld) for primes <= %ld\n", gap, limit);
+
         // Sieve of [N, N+gap]
         gap += 1;
         std::vector<char> composite(gap, 0);
@@ -90,6 +92,9 @@ namespace sieve_util {
 
         // Remove all evens
         for (uint32_t d = mpz_cdiv_ui(N, 2); d < gap; d += 2) {
+            if (!composite[d]) {
+                printf("2,%d\n", d);
+            }
             composite[d] = true;
         }
         if ((N_int <= 2) && (N_end >= 2)) {
@@ -114,6 +119,10 @@ namespace sieve_util {
             if (first >= two_p) first -= two_p;
 
             for (uint32_t d = first; d < gap; d += two_p) {
+                if (!composite[d]) {
+                    assert(N_int > prime);
+                    printf("%ld,%d\n", prime, d);
+                }
                 composite[d] = true;
             }
 
@@ -136,6 +145,9 @@ namespace sieve_util {
                 first += prime;
                 if (first >= two_p) first -= two_p;
                 if (first < gap) {
+                    if (!composite[first]) {
+                        printf("%ld,%ld\n", prime, first);
+                    }
                     composite[first] = true;
                 }
             }

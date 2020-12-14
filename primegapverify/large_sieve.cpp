@@ -123,8 +123,6 @@ int main(int argc, char ** argv) {
 
     size_t prime_count = 0;
     auto composite = sieve_util::sieve(N, gap, limit, prime_count);
-    size_t odds = gap / 2 + 1;
-    assert(composite.size() == odds);
 
     /* Final stats */
     size_t unknowns = std::count(composite.begin(), composite.end(), 0);
@@ -133,9 +131,11 @@ int main(int argc, char ** argv) {
             gap - unknowns, gap, 100.0 * count_c / gap, unknowns, prime_count);
 
     /* Output */
+    /*
     for(size_t i = 0; i < composite.size(); i++) {
         if (!composite[i]) {
             printf("%lld * %lld# / %lld + %lld\n", m, p, d, a+2*i);
         }
     }
+    */
 }
