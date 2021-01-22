@@ -35,6 +35,8 @@ PA_RE_1 = re.compile(r"^(\d+)#([+-]\d+)$")
 
 # power form            | b ^ p +- a
 POWER_BPA_RE_1 = re.compile(r"^(\d+)\^(\d+)([+-]\d+)$")
+# power form            | m * b ^ p +- a
+POWER_BPA_RE_2 = re.compile(r"^(\d+)\*(\d+)\^(\d+)([+-]\d+)$")
 
 
 def primorial(k):
@@ -66,6 +68,13 @@ def parse(num_str):
             return None
         return b ** p + a
 
+    num_match = POWER_BPA_RE_2.match(num_str)
+    if num_match:
+        m, b, p, a = map(int, num_match.groups())
+        if b <= 0:
+            # Order of operations is hard
+            return None
+        return m * b ** p + a
     return None
 
 
