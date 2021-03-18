@@ -30,6 +30,8 @@ MPDDA_RE_2 = re.compile(r"^(\d+)\*(\d+)#/\((\d+)#\*(\d+)\)([+-]\d+)$")
 PDA_RE_1 = re.compile(r"^\(?(\d+)#\)?/(\d+)([+-]\d+)$")
 # No m, primorial d     | P# / d# +- a
 PDA_RE_2 = re.compile(r"^\(?(\d+)#\)?/(\d+)#([+-]\d+)$")
+# No d                  | M * P# +- a
+MPA_RE_1 = re.compile(r"^(\d+)\*(\d+)#([+-]\d+)$")
 # No m, no d            | P# +- a
 PA_RE_1 = re.compile(r"^(\d+)#([+-]\d+)$")
 
@@ -118,6 +120,11 @@ def parse_primorial_standard_form(num_str):
         p, dp, a = map(int, match.groups())
         D = primorial(dp)
         return (1, p, D, a)
+
+    match = MPA_RE_1.match(num_str)
+    if match:
+        m, p, a = map(int, match.groups())
+        return (m, p, 1, a)
 
     match = PA_RE_1.match(num_str)
     if match:
