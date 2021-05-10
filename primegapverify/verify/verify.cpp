@@ -87,6 +87,38 @@ int set_mpz_from_int_str(mpz_t &n, PyObject* n_str) {
     return 0;
 }
 
+bool
+check_sieve_args(uint64_t gap, uint64_t max_prime)
+{
+    if (max_prime == 0 || max_prime >= 1'000'000'000'000) {
+        PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
+        return false;
+    }
+
+    if ((gap <= 0) || (gap > (1L << 26))) {
+        PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
+        return false;
+    }
+
+    return true;
+}
+
+bool
+init_and_check_n(mpz_t& n, PyObject *start)
+{
+    mpz_init(n);
+    if (set_mpz_from_int_str(n, start)) {
+        PyErr_Format(PyExc_ValueError, "bad start(%S)", start);
+        return false;
+    }
+    if (mpz_sgn(n) < 0) {
+        PyErr_Format(PyExc_ValueError, "negative start(%S)", start);
+        return false;
+    }
+
+    return true;
+}
+
 PyObject*
 sieve_factor_interval(PyObject *self, PyObject *args)
 {
@@ -97,25 +129,13 @@ sieve_factor_interval(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "OLL", &start, &gap, &max_prime))
         return NULL;
 
-    if (max_prime == 0 || max_prime >= 51'000'000'000) {
-        return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
-    }
-
-    if ((gap <= 0) || (gap > (1L << 26))) {
-        return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
-    }
+    if (!check_sieve_args(gap, max_prime))
+        return NULL;
 
     // XXX: Silly to roundtrip this through a str, but it works.
     mpz_t n;
-    mpz_init(n);
-    if (set_mpz_from_int_str(n, start)) {
-        PyErr_Format(PyExc_ValueError, "bad start(%S)", start);
+    if (!init_and_check_n(n, start))
         return NULL;
-    }
-    if (mpz_sgn(n) < 0) {
-        PyErr_Format(PyExc_ValueError, "negative start(%S)", start);
-        return NULL;
-    }
 
     size_t prime_count;
     auto factors = sieve_util::sieve_factors(n, gap, max_prime, prime_count);
@@ -143,25 +163,13 @@ sieve_interval(PyObject *self, PyObject *args)
     if (!PyArg_ParseTuple(args, "OLL", &start, &gap, &max_prime))
         return NULL;
 
-    if (max_prime == 0 || max_prime >= 51'000'000'000) {
-        return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
-    }
-
-    if ((gap <= 0) || (gap > (1L << 26))) {
-        return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
-    }
+    if (!check_sieve_args(gap, max_prime))
+        return NULL;
 
     // XXX: Silly to roundtrip this through a str, but it works.
     mpz_t n;
-    mpz_init(n);
-    if (set_mpz_from_int_str(n, start)) {
-        PyErr_Format(PyExc_ValueError, "bad start(%S)", start);
+    if (!init_and_check_n(n, start))
         return NULL;
-    }
-    if (mpz_sgn(n) < 0) {
-        PyErr_Format(PyExc_ValueError, "negative start(%S)", start);
-        return NULL;
-    }
 
     size_t prime_count;
     auto composites = sieve_util::sieve(n, gap, max_prime, prime_count);
@@ -192,7 +200,7 @@ sieve_limit(PyObject *self, PyObject *args)
         return PyErr_Format(PyExc_ValueError, "bad n_bits(%d)", n_bits);
     }
 
-    if (gap < 2) {
+    if ((gap < 2) || (gap > (1L << 26))) {
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
     }
 

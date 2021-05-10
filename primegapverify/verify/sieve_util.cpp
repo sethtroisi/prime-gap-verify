@@ -86,6 +86,7 @@ namespace sieve_util {
             mpz_clear(temp);
         }
 
+        // Something didn't go right with sqrt
         if (limit > N_end) { return {}; }
 
         // Remove all evens
@@ -137,6 +138,8 @@ namespace sieve_util {
             // Only one in the interval
             // either N_int <= prime (the number is the prime)
             // or N_int > prime (and we mark off some multiple)
+
+            // Only look at odd multiples of prime
             uint64_t two_p = 2 * prime;
             uint64_t first = mpz_cdiv_ui(N, two_p);
             first += prime;
