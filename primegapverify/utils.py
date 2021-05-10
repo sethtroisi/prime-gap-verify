@@ -41,6 +41,20 @@ def sieve(start, gap, max_prime=None):
     return verify.sieve_interval(str(start), gap, max_prime)
 
 
+def sieve_factor(start, gap, max_prime=None):
+    """
+    Sieve [start, start+gap] marking primes (less than max_prime) that divide
+    numbers in the interval.
+    """
+
+    assert start >= 0, ("Negative start! ", start)
+    assert gap >= 1, gap
+    max_prime = _get_max_prime(start, gap, max_prime)
+    assert max_prime >= 2, max_prime
+
+    return verify.sieve_factor_interval(str(start), gap, max_prime)
+
+
 def validate(start, gap, max_prime=None, verbose=False):
     """Validate start, start+gap are prime and the interior is composite"""
 

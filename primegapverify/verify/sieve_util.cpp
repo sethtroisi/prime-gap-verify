@@ -47,14 +47,14 @@ namespace sieve_util {
     }
 
 
-    std::vector<char> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count) {
-        // 10GB would be a lot ram.
-        if ((gap < 0) || (gap > (1L << 40))) { return {}; }
+    std::vector<uint64_t> sieve_factors(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count) {
+        // 8GB would be a lot ram.
+        if ((gap < 0) || (gap > (1L << 26))) { return {}; }
         if (limit > (1L << 50)) { return {}; }
 
         // Sieve of [N, N+gap]
         gap += 1;
-        std::vector<char> composite(gap, 0);
+        std::vector<uint64_t> composite(gap, 0);
 
         // primes >= N_int, should avoid marking themselves off.
         uint64_t N_int = mpz_cmp_ui(N, limit) <= 0 ? mpz_get_ui(N) : limit + 1;
@@ -63,12 +63,12 @@ namespace sieve_util {
 
         // Mark 0 as composite because.
         if ((N_int == 0) && (N_end >= 0)) {
-            composite[0] = true;
+            composite[0] = 1;
         }
 
         // Mark 1 as composite because.
         if ((N_int <= 1) && (N_end >= 1)) {
-            composite[1 - N_int] = true;
+            composite[1 - N_int] = 1;
         }
 
         // limit doesn't need to exceed sqrt(N + gap)
@@ -90,11 +90,11 @@ namespace sieve_util {
 
         // Remove all evens
         for (uint32_t d = mpz_cdiv_ui(N, 2); d < gap; d += 2) {
-            composite[d] = true;
+            composite[d] = 2;
         }
         if ((N_int <= 2) && (N_end >= 2)) {
             // Go back and mark 2 as prime
-            composite[2 - N_int] = false;
+            composite[2 - N_int] = 0;
         }
 
         prime_count = 1;
@@ -105,7 +105,7 @@ namespace sieve_util {
         assert(prime == 3);
 
         // small primes can divide multiple numbers
-        for (; prime < gap && prime <= limit; prime = iter.next()) {
+        for (; prime <= gap && prime <= limit; prime = iter.next()) {
             prime_count++;
 
             uint64_t two_p = 2 * prime;
@@ -113,35 +113,60 @@ namespace sieve_util {
             first += prime;
             if (first >= two_p) first -= two_p;
 
-            for (uint32_t d = first; d < gap; d += two_p) {
-                composite[d] = true;
-            }
-
+            // Don't mark prime as dividing prime.
             if (N_int <= prime) {
-                // mark prime as prime
-                composite[prime - N_int] = false;
+                first += two_p;
+            }
+            for (uint32_t d = first; d < gap; d += two_p) {
+                composite[d] = prime;
             }
         }
+
+        // Only one in the interval (prime > gap)
+        if (prime >= N_int) {
+            // Avoid marking self off by starting at 3*prime => out of interval
+            return composite;
+        }
+
+        assert(N_int > prime);
+        assert(N_int > limit);
 
         for (; prime <= limit; prime = iter.next()) {
             prime_count++;
 
             // Only one in the interval
             // either N_int <= prime (the number is the prime)
-            // or N_int > prime (and we mark off some multiple
-            if (N_int > prime) {
-
-                uint64_t two_p = 2 * prime;
-                uint64_t first = mpz_cdiv_ui(N, two_p);
-                first += prime;
-                if (first >= two_p) first -= two_p;
-                if (first < gap) {
-                    composite[first] = true;
-                }
+            // or N_int > prime (and we mark off some multiple)
+            uint64_t two_p = 2 * prime;
+            uint64_t first = mpz_cdiv_ui(N, two_p);
+            first += prime;
+            if (first >= two_p) first -= two_p;
+            if (first < gap) {
+                composite[first] = prime;
             }
         }
 
         // Possible a vector copy, but fast in the overall scheme of things.
         return composite;
     }
+
+    std::vector<char> sieve(mpz_t &N, uint64_t gap, uint64_t limit, size_t &prime_count) {
+        auto factors = sieve_factors(N, gap, limit, prime_count);
+        if (factors.empty()) {
+            return {};
+        }
+
+        // Sieve of [N, N+gap]
+        gap += 1;
+        assert(gap == factors.size());
+
+        // Possible a vector copy, but fast in the overall scheme of things.
+        std::vector<char> composite(gap, 0);
+        size_t i = 0;
+        for (uint64_t f : factors) {
+            composite[i++] = f > 0;
+        }
+        return composite;
+    }
+
 }  // namespace sieve_util

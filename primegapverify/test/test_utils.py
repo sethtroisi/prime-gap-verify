@@ -135,6 +135,8 @@ def test_zero_one_composite():
         if s + g - 1 >= 1:
             assert composites[1 - s] == True
 
+# TODO sieve_factor tests
+
 def test_validate():
     for s, g in ((101, 2), (103, 4), (113, 14), (360653, 96),
                  (18361375334787046697, 1550),

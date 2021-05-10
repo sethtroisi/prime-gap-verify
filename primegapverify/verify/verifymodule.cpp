@@ -19,6 +19,7 @@
 
 static PyMethodDef VerifyMethods[] = {
     {"sieve_interval",  sieve_interval, METH_VARARGS, doc_sieve_interval},
+    {"sieve_factor_interval",  sieve_factor_interval, METH_VARARGS, doc_sieve_factor_interval},
     {"sieve_limit",  sieve_limit, METH_VARARGS, doc_sieve_limit},
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };

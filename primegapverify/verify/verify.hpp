@@ -17,7 +17,9 @@
 #include <Python.h>
 
 extern const char doc_sieve_interval[];
+extern const char doc_sieve_factor_interval[];
 extern const char doc_sieve_limit[];
 
 PyObject* sieve_interval(PyObject *self, PyObject *args);
+PyObject* sieve_factor_interval(PyObject *self, PyObject *args);
 PyObject* sieve_limit(PyObject *self, PyObject *args);

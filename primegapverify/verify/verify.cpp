@@ -39,6 +39,22 @@ const char doc_sieve_interval[] = R"EOF(
 
 )EOF";
 
+const char doc_sieve_factor_interval[] = R"EOF(
+    Sieve an interval of numbers
+
+    Parameters
+    ----------
+       N : start of interval
+       distance : size of interval
+       max_prime : remove all multiples of primes less than or equal
+
+    Returns
+    -------
+        factors : array
+            Factor or 0 for distance+1 numbers [N, N+distance]
+            Never removes primes even if max_prime > N. 0 and 1 marked as having factor 1.
+
+)EOF";
 
 const char doc_sieve_limit[] = R"EOF(
     Determine a reasonable max prime for sieve_interval
@@ -72,6 +88,52 @@ int set_mpz_from_int_str(mpz_t &n, PyObject* n_str) {
 }
 
 PyObject*
+sieve_factor_interval(PyObject *self, PyObject *args)
+{
+    PyObject *start;
+    uint64_t gap;
+    uint64_t max_prime;
+
+    if (!PyArg_ParseTuple(args, "OLL", &start, &gap, &max_prime))
+        return NULL;
+
+    if (max_prime == 0 || max_prime >= 51'000'000'000) {
+        return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
+    }
+
+    if ((gap <= 0) || (gap > (1L << 26))) {
+        return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
+    }
+
+    // XXX: Silly to roundtrip this through a str, but it works.
+    mpz_t n;
+    mpz_init(n);
+    if (set_mpz_from_int_str(n, start)) {
+        PyErr_Format(PyExc_ValueError, "bad start(%S)", start);
+        return NULL;
+    }
+    if (mpz_sgn(n) < 0) {
+        PyErr_Format(PyExc_ValueError, "negative start(%S)", start);
+        return NULL;
+    }
+
+    size_t prime_count;
+    auto factors = sieve_util::sieve_factors(n, gap, max_prime, prime_count);
+    if (factors.empty()) {
+        PyErr_Format(PyExc_ValueError, "sieve failed");
+    }
+
+    PyObject* pylist = PyList_New( factors.size() );
+    for (size_t i = 0; i < factors.size(); i++) {
+        PyList_SET_ITEM(pylist, i, PyLong_FromLong(factors[i]));
+    }
+
+    // XXX: Convert to new tuple object and return that.
+    return pylist;
+}
+
+
+PyObject*
 sieve_interval(PyObject *self, PyObject *args)
 {
     PyObject *start;
@@ -85,7 +147,7 @@ sieve_interval(PyObject *self, PyObject *args)
         return PyErr_Format(PyExc_ValueError, "bad max_prime(%d)", max_prime);
     }
 
-    if ((gap <= 0) || (gap > (1L << 40))) {
+    if ((gap <= 0) || (gap > (1L << 26))) {
         return PyErr_Format(PyExc_ValueError, "bad gap(%d)", gap);
     }
 
@@ -103,7 +165,7 @@ sieve_interval(PyObject *self, PyObject *args)
 
     size_t prime_count;
     auto composites = sieve_util::sieve(n, gap, max_prime, prime_count);
-    if (!composites.size()) {
+    if (composites.empty()) {
         PyErr_Format(PyExc_ValueError, "sieve failed");
     }
 

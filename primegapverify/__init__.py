@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .utils import sieve, validate, is_prime_large, check_pfgw_available
+from .utils import sieve, sieve_factor, validate, is_prime_large, check_pfgw_available
 from .parsenumber import parse_primorial_standard_form, parse
 from verify import sieve_limit
 from ._version import __version__
 
 __all__ = [
     "parse_primorial_standard_form", "parse",
-    "sieve", "validate",
+    "sieve", "sieve_factor", "validate",
     "is_prime_large", "check_pfgw_available",
     "sieve_limit",
 ]
