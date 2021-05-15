@@ -142,9 +142,15 @@ def test_validate():
                  (18361375334787046697, 1550),
                  (9691983639208775401081992556968666567067, 2982)):
         assert utils.validate(s, g), (s, g)
+        assert utils.validate(str(s), g), (s, g)
         if g > 2:
             assert not utils.validate(s, g - 2)
         assert not utils.validate(s, g + 2)
+
+def test_validate_string():
+    assert utils.validate("11051077202945*97#/30 -1754", 2900)
+    assert utils.validate(1009, 4)
+    assert not utils.validate([1009], 4)
 
 
 def test_check_pfgw_available():

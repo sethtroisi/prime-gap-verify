@@ -18,6 +18,7 @@ import time
 
 import gmpy2
 
+from . import parsenumber
 import verify
 
 def _get_max_prime(start, gap, max_prime):
@@ -59,6 +60,17 @@ def validate(start, gap, max_prime=None, verbose=False):
     """Validate start, start+gap are prime and the interior is composite"""
 
     # TODO return reason
+
+    # primegapverify.validate(<STRING>, ...)
+    if isinstance(start, str):
+        # Check if we can parse with parse(start)
+        num = parsenumber.parse(start)
+        assert num, (start, "Not number or parsable string")
+        start = num
+
+    if not isinstance(start, int):
+        print("Start not a number", type(start))
+        return False
 
     assert start >= 0, ("Negative start! ", start)
     assert gap >= 1, gap
