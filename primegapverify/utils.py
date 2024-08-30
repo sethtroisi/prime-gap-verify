@@ -39,7 +39,10 @@ def sieve(start, gap, max_prime=None):
     max_prime = _get_max_prime(start, gap, max_prime)
     assert max_prime >= 2, max_prime
 
-    return verify.sieve_interval(str(start), gap, max_prime)
+    # str(start) only converts up to 4300 digits see PYTHONINTMAXSTRDIGITS
+    # gmpy2 is faster after 1000 digits and 10x faster after 10,000 digits
+    str_start = gmpy2.mpz(start).digits()
+    return verify.sieve_interval(str_start, gap, max_prime)
 
 
 def sieve_factor(start, gap, max_prime=None):
