@@ -20,11 +20,25 @@ Python library to verify prime gaps for
 
 ## Testing
 
-If I remove `__init__.py` everything works but I need `__init__.py` for `python setup.py install`
-Not sure how to fix. Wasted 3 hours already.
+Maybe this works, I've struggled with relative imports for 4+ hours :(
+
 ```bash
 cd primegapverify
 python -m pytest
+```
+
+## Uploading
+
+```bash
+make clean
+make all
+cd primegapverify
+python -m pytest
+cd .
+pip install .
+# Manual Test
+python setup.py sdist bdist_wheel
+python -m twine upload dist/*.gz
 ```
 
 ## Primes

@@ -18,7 +18,7 @@ import time
 
 import gmpy2
 
-from . import parsenumber
+from primegapverify import parsenumber
 import verify
 
 def _get_max_prime(start, gap, max_prime):
