@@ -37,6 +37,10 @@ python -m pytest
 cd .
 pip install .
 # Manual Test
+python
+# Make source distribution
+python setup.py sdist
+# Make binary wheel
 python setup.py sdist bdist_wheel
 python -m twine upload dist/*.gz
 ```
